@@ -1,0 +1,26 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Editors
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Virtual environment
+.venv/
+venv/
+
+# Distribution / packaging
+.Python
+node_modules/
+
+# Environment files
+*.env
+.env.dev
+
+# Database files
+*.sqlite3
+
+# Specific to the project

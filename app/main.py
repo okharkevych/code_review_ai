@@ -1,7 +1,8 @@
 import os
 
+import httpx
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 load_dotenv()
@@ -34,3 +35,16 @@ async def perform_review(request: ReviewRequest):
     )
 
     return review
+
+
+async def fetch_github_repo(github_repo_url: str):
+    headers = {'Authorization': f'token {os.getenv("GITHUB_TOKEN")}'}
+    response = await httpx.get(github_repo_url, headers=headers)
+
+    if response.status_code != 200:
+        raise HTTPException(
+            status_code=response.status_code,
+            detail='Failed to fetch repository.'
+        )
+
+    return response.json()

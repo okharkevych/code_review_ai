@@ -40,10 +40,12 @@ async def perform_review(request: ReviewRequest) -> dict:
 async def fetch_github_repo(github_repo_url: str) -> dict:
     github_token: str = os.getenv('GITHUB_TOKEN')
     headers: dict = {'Authorization': f'token {github_token}'}
-    response: httpx.Response = await httpx.get(
-        url=github_repo_url,
-        headers=headers
-    )
+
+    async with httpx.AsyncClient() as client:
+        response: httpx.Response = await client.get(
+            url=github_repo_url,
+            headers=headers
+        )
 
     if response.status_code != 200:
         raise HTTPException(
@@ -66,14 +68,16 @@ async def analyze_code(
     openai_api_key: str = os.getenv('OPENAI_API_KEY')
     headers: dict = {'Authorization': f'Bearer {openai_api_key}'}
     gpt_model: str = 'gpt-4-turbo'
-    response: httpx.Response = await httpx.post(
-        url='https://api.openai.com/v1/chat/completions',
-        headers=headers,
-        json={
-            'model': gpt_model,
-            'messages': [{'role': 'user', 'content': gpt_prompt}],
-        }
-    )
+
+    async with httpx.AsyncClient() as client:
+        response: httpx.Response = await client.post(
+            url='https://api.openai.com/v1/chat/completions',
+            headers=headers,
+            json={
+                'model': gpt_model,
+                'messages': [{'role': 'user', 'content': gpt_prompt}],
+            }
+        )
 
     if response.status_code != 200:
         raise HTTPException(

@@ -48,3 +48,34 @@ async def fetch_github_repo(github_repo_url: str):
         )
 
     return response.json()
+
+
+async def analyze_code(
+    repo_contents,
+    assignment_description: str,
+    candidate_level: str
+):
+    gpt_prompt: str = create_gpt_prompt(
+        repo_contents, assignment_description, candidate_level
+    )
+
+    openai_api_key: str = os.getenv('OPENAI_API_KEY')
+    headers = {'Authorization': f'Bearer {openai_api_key}'}
+    response = await httpx.post(
+        url='https://api.openai.com/v1/chat/completions',
+        headers=headers,
+        json={
+            'model': 'gpt-4-turbo',
+            'messages': [{'role': 'user', 'content': gpt_prompt}],
+        }
+    )
+
+    if response.status_code != 200:
+        raise HTTPException(
+            status_code=response.status_code,
+            detail='OpenAI API request failed.'
+        )
+
+    review = response.json()
+
+    return create_review_result(repo_contents, review)

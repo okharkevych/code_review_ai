@@ -27,7 +27,9 @@ async def review_code(request: ReviewRequest) -> dict:
 
 
 async def perform_review(request: ReviewRequest) -> dict:
-    repo_contents: dict = await fetch_github_repo(request.github_repo_url)
+    repo_contents: list[dict] = await fetch_github_repo(
+        request.github_repo_url
+    )
     review: dict = await analyze_code(
         repo_contents,
         request.assignment_description,
@@ -76,7 +78,7 @@ async def analyze_code(
     assignment_description: str,
     candidate_level: str
 ) -> dict:
-    gpt_prompt: str = _create_gpt_prompt(
+    gpt_prompt: str = create_gpt_prompt(
         repo_contents, assignment_description, candidate_level
     )
 
@@ -102,7 +104,7 @@ async def analyze_code(
 
     review: dict = response.json()
 
-    return _create_review_result(repo_contents, review)
+    return create_review_result(repo_contents, review)
 
 
 def convert_to_api_url(github_repo_url: str) -> str:
@@ -114,7 +116,7 @@ def convert_to_api_url(github_repo_url: str) -> str:
     return api_url
 
 
-def _create_gpt_prompt(
+def create_gpt_prompt(
     repo_contents,
     assignment_description: str,
     candidate_level: str
@@ -122,5 +124,5 @@ def _create_gpt_prompt(
     raise NotImplementedError
 
 
-def _create_review_result(repo_contents, review: dict) -> dict:
+def create_review_result(repo_contents, review: dict) -> dict:
     raise NotImplementedError

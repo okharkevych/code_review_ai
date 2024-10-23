@@ -23,3 +23,14 @@ async def review_code(request: ReviewRequest):
 
     review_result = await perform_review(request)
     return review_result
+
+
+async def perform_review(request: ReviewRequest):
+    repo_contents = await fetch_github_repo(request.github_repo_url)
+    review = await analyze_code(
+        repo_contents,
+        request.assignment_description,
+        request.candidate_level
+    )
+
+    return review

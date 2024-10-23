@@ -105,6 +105,15 @@ async def analyze_code(
     return _create_review_result(repo_contents, review)
 
 
+def convert_to_api_url(github_repo_url: str) -> str:
+    url_parts: list = github_repo_url.rstrip('/').split('/')
+    owner: str = url_parts[-2]
+    repo: str = url_parts[-1]
+    api_url: str = f'https://api.github.com/repos/{owner}/{repo}/contents'
+
+    return api_url
+
+
 def _create_gpt_prompt(
     repo_contents,
     assignment_description: str,

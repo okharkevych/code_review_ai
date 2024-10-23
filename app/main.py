@@ -16,19 +16,19 @@ class ReviewRequest(BaseModel):
     candidate_level: str
 
 
-@app.post('/review')
-async def review_code(request: ReviewRequest):
-    database_url: str = os.getenv('DATABASE_URL')
+@app.post(path='/review')
+async def review_code(request: ReviewRequest) -> dict:
+    database_url: str = os.getenv(key='DATABASE_URL')
     if database_url:
         return {'message': 'Database functionality TBI.'}
 
-    review_result = await perform_review(request)
+    review_result: dict = await perform_review(request)
     return review_result
 
 
-async def perform_review(request: ReviewRequest):
-    repo_contents = await fetch_github_repo(request.github_repo_url)
-    review = await analyze_code(
+async def perform_review(request: ReviewRequest) -> dict:
+    repo_contents: dict = await fetch_github_repo(request.github_repo_url)
+    review: dict = await analyze_code(
         repo_contents,
         request.assignment_description,
         request.candidate_level
@@ -37,9 +37,13 @@ async def perform_review(request: ReviewRequest):
     return review
 
 
-async def fetch_github_repo(github_repo_url: str):
-    headers = {'Authorization': f'token {os.getenv("GITHUB_TOKEN")}'}
-    response = await httpx.get(github_repo_url, headers=headers)
+async def fetch_github_repo(github_repo_url: str) -> dict:
+    github_token: str = os.getenv('GITHUB_TOKEN')
+    headers: dict = {'Authorization': f'token {github_token}'}
+    response: httpx.Response = await httpx.get(
+        url=github_repo_url,
+        headers=headers
+    )
 
     if response.status_code != 200:
         raise HTTPException(
@@ -54,18 +58,19 @@ async def analyze_code(
     repo_contents,
     assignment_description: str,
     candidate_level: str
-):
+) -> dict:
     gpt_prompt: str = _create_gpt_prompt(
         repo_contents, assignment_description, candidate_level
     )
 
     openai_api_key: str = os.getenv('OPENAI_API_KEY')
-    headers = {'Authorization': f'Bearer {openai_api_key}'}
-    response = await httpx.post(
+    headers: dict = {'Authorization': f'Bearer {openai_api_key}'}
+    gpt_model: str = 'gpt-4-turbo'
+    response: httpx.Response = await httpx.post(
         url='https://api.openai.com/v1/chat/completions',
         headers=headers,
         json={
-            'model': 'gpt-4-turbo',
+            'model': gpt_model,
             'messages': [{'role': 'user', 'content': gpt_prompt}],
         }
     )
@@ -76,7 +81,7 @@ async def analyze_code(
             detail='OpenAI API request failed.'
         )
 
-    review = response.json()
+    review: dict = response.json()
 
     return _create_review_result(repo_contents, review)
 

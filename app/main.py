@@ -55,7 +55,7 @@ async def analyze_code(
     assignment_description: str,
     candidate_level: str
 ):
-    gpt_prompt: str = create_gpt_prompt(
+    gpt_prompt: str = _create_gpt_prompt(
         repo_contents, assignment_description, candidate_level
     )
 
@@ -78,4 +78,16 @@ async def analyze_code(
 
     review = response.json()
 
-    return create_review_result(repo_contents, review)
+    return _create_review_result(repo_contents, review)
+
+
+def _create_gpt_prompt(
+    repo_contents,
+    assignment_description: str,
+    candidate_level: str
+) -> str:
+    raise NotImplementedError
+
+
+def _create_review_result(repo_contents, review: dict) -> dict:
+    raise NotImplementedError

@@ -23,7 +23,7 @@ async def check_github_token_validity() -> bool:
 
 
 @pytest.mark.asyncio
-async def test_check_github_token_validity():
+async def test_github_token_is_valid():
     assert os.getenv('GITHUB_TOKEN') is not None
 
     is_valid: bool = await check_github_token_validity()

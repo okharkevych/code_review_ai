@@ -2,11 +2,8 @@ import os
 
 import httpx
 import pytest
-from dotenv import load_dotenv
 
 from app.main import fetch_github_repo
-
-load_dotenv()
 
 
 async def check_github_token_validity() -> bool:

@@ -34,5 +34,6 @@ async def test_github_token_is_valid():
 async def test_fetch_github_repo_success_live(github_repo_url):
     repo_contents: list[dict] = await fetch_github_repo(github_repo_url)
 
-    assert len(repo_contents) == 15
+    assert len(repo_contents) == 3
     assert repo_contents[0]['name'] == '.gitignore'
+    assert repo_contents[2]['name'] == 'file_1'

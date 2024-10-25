@@ -39,5 +39,5 @@ async def test_perform_review(mocker):
     review = await perform_review(request_data)
 
     assert review == fake_gpt_response_content
-    mock_fetch_repo.assert_called_once_with(request_data.github_repo_url)
+    mock_fetch_repo.assert_called_once_with(github_repo_url=fake_repo_url)
     mock_process_prompt.assert_called_once()

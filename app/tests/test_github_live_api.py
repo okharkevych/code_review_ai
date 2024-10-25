@@ -3,6 +3,7 @@ import os
 import httpx
 import pytest
 
+from app.github_api import convert_to_api_url
 from app.github_api import fetch_github_repo
 
 
@@ -17,6 +18,15 @@ async def check_github_token_validity() -> bool:
         )
 
     return response.status_code == 200
+
+
+def test_convert_to_api_url(github_repo_url):
+    expected_url: str = (
+        'https://api.github.com/repos/okharkevych-api-test/api_target/contents'
+    )
+    actual_url: str = convert_to_api_url(github_repo_url)
+
+    assert actual_url == expected_url
 
 
 @pytest.mark.asyncio

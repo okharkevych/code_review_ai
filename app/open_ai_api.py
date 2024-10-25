@@ -38,7 +38,7 @@ async def analyze_code(
     return create_review_result(repo_contents, review)
 
 
-def create_gpt_prompt(
+def create_code_review_prompt(
     repo_contents,
     assignment_description: str,
     candidate_level: str

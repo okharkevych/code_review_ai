@@ -4,38 +4,32 @@ import httpx
 from fastapi import HTTPException
 
 
-async def process_gpt_prompt(
-    repo_contents,
-    assignment_description: str,
-    candidate_level: str
-) -> dict:
-    gpt_prompt: str = create_gpt_prompt(
-        repo_contents, assignment_description, candidate_level
-    )
-
-    openai_api_key: str = os.getenv('OPENAI_API_KEY')
+async def process_gpt_prompt(gpt_prompt: str) -> httpx.Response:
+    openai_api_key: str = os.getenv(key='OPENAI_API_KEY')
     headers: dict = {'Authorization': f'Bearer {openai_api_key}'}
-    gpt_model: str = 'gpt-4-turbo'
 
-    async with httpx.AsyncClient() as client:
+    gpt_model: str = os.getenv(key='GPT_MODEL', default='gpt-4-turbo')
+    payload: dict = {
+        'model': gpt_model,
+        'messages': [{'role': 'user', 'content': gpt_prompt}]
+    }
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
         response: httpx.Response = await client.post(
             url='https://api.openai.com/v1/chat/completions',
+            json=payload,
             headers=headers,
-            json={
-                'model': gpt_model,
-                'messages': [{'role': 'user', 'content': gpt_prompt}],
-            }
         )
 
     if response.status_code != 200:
+        response_json: dict = response.json()
+        error_message: str = response_json['error']['message']
         raise HTTPException(
             status_code=response.status_code,
-            detail='OpenAI API request failed.'
+            detail=error_message
         )
 
-    review: dict = response.json()
-
-    return create_review_result(repo_contents, review)
+    return response
 
 
 def create_code_review_prompt(

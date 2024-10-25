@@ -1,10 +1,11 @@
 import os
+from typing import Literal
 
 import httpx
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi import HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl, constr
 
 from app.github_api import fetch_github_repo
 from app.open_ai_api import process_gpt_prompt, create_code_review_prompt
@@ -15,9 +16,9 @@ app = FastAPI()
 
 
 class ReviewRequest(BaseModel):
-    assignment_description: str
-    github_repo_url: str
-    candidate_level: str
+    assignment_description: constr(min_length=1)
+    github_repo_url: HttpUrl
+    candidate_level: Literal['Junior', 'Middle', 'Senior']
 
 
 @app.post(path='/review')

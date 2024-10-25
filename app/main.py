@@ -22,7 +22,7 @@ class ReviewRequest(BaseModel):
 
 
 @app.post(path='/review')
-async def review_code(request: ReviewRequest) -> str:
+async def review_code(request: ReviewRequest) -> dict:
     database_url: str = os.getenv(key='DATABASE_URL')
     if database_url:
         raise HTTPException(
@@ -31,7 +31,7 @@ async def review_code(request: ReviewRequest) -> str:
         )
 
     review: str = await perform_review(request)
-    return review
+    return {'review': review}
 
 
 async def perform_review(request: ReviewRequest) -> str:

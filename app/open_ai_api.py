@@ -4,7 +4,7 @@ import httpx
 from fastapi import HTTPException
 
 
-async def analyze_code(
+async def process_gpt_prompt(
     repo_contents,
     assignment_description: str,
     candidate_level: str

@@ -36,7 +36,7 @@ async def review_code(request: ReviewRequest) -> str:
 
 async def perform_review(request: ReviewRequest) -> str:
     repo_contents: dict = await fetch_github_repo(
-        request.github_repo_url
+        github_repo_url=str(request.github_repo_url)
     )
     gpt_response: httpx.Response = await process_gpt_prompt(
         gpt_prompt=create_code_review_prompt(

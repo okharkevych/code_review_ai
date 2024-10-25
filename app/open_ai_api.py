@@ -44,7 +44,3 @@ def create_gpt_prompt(
     candidate_level: str
 ) -> str:
     raise NotImplementedError
-
-
-def create_review_result(repo_contents, review: dict) -> dict:
-    raise NotImplementedError

@@ -16,6 +16,9 @@ venv/
 .Python
 node_modules/
 
+# Coverage reports
+.coverage
+
 # Environment files
 *.env
 .env.dev

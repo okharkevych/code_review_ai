@@ -1,11 +1,11 @@
 import os
 
-import httpx
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from pydantic import BaseModel
 
 from app.github_api import fetch_github_repo
+from app.open_ai_api import analyze_code
 
 load_dotenv()
 
@@ -39,49 +39,3 @@ async def perform_review(request: ReviewRequest) -> dict:
     )
 
     return review
-
-
-async def analyze_code(
-    repo_contents,
-    assignment_description: str,
-    candidate_level: str
-) -> dict:
-    gpt_prompt: str = create_gpt_prompt(
-        repo_contents, assignment_description, candidate_level
-    )
-
-    openai_api_key: str = os.getenv('OPENAI_API_KEY')
-    headers: dict = {'Authorization': f'Bearer {openai_api_key}'}
-    gpt_model: str = 'gpt-4-turbo'
-
-    async with httpx.AsyncClient() as client:
-        response: httpx.Response = await client.post(
-            url='https://api.openai.com/v1/chat/completions',
-            headers=headers,
-            json={
-                'model': gpt_model,
-                'messages': [{'role': 'user', 'content': gpt_prompt}],
-            }
-        )
-
-    if response.status_code != 200:
-        raise HTTPException(
-            status_code=response.status_code,
-            detail='OpenAI API request failed.'
-        )
-
-    review: dict = response.json()
-
-    return create_review_result(repo_contents, review)
-
-
-def create_gpt_prompt(
-    repo_contents,
-    assignment_description: str,
-    candidate_level: str
-) -> str:
-    raise NotImplementedError
-
-
-def create_review_result(repo_contents, review: dict) -> dict:
-    raise NotImplementedError

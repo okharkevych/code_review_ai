@@ -24,7 +24,10 @@ class ReviewRequest(BaseModel):
 async def review_code(request: ReviewRequest) -> str:
     database_url: str = os.getenv(key='DATABASE_URL')
     if database_url:
-        return {'message': 'Database functionality TBI.'}
+        raise HTTPException(
+            status_code=501,
+            detail='Database functionality TBI.'
+        )
 
     review: str = await perform_review(request)
     return review

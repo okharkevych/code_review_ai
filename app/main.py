@@ -3,6 +3,7 @@ import os
 import httpx
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from fastapi import HTTPException
 from pydantic import BaseModel
 
 from app.github_api import fetch_github_repo
@@ -20,13 +21,13 @@ class ReviewRequest(BaseModel):
 
 
 @app.post(path='/review')
-async def review_code(request: ReviewRequest) -> dict:
+async def review_code(request: ReviewRequest) -> str:
     database_url: str = os.getenv(key='DATABASE_URL')
     if database_url:
         return {'message': 'Database functionality TBI.'}
 
-    review_result: dict = await perform_review(request)
-    return review_result
+    review: str = await perform_review(request)
+    return review
 
 
 async def perform_review(request: ReviewRequest) -> str:
